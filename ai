@@ -1,0 +1,73 @@
+**Google Drive**
+
+from google.colab import drive
+drive.mount('/content/drive')
+
+## **libraries**
+
+import numpy as np
+import math as mt
+import random
+import pandas as pd
+
+## **Data**
+
+onlineads = pd.read_csv("/content/drive/MyDrive/aidata/Social_Network_Ads.csv")
+onlineads.head()
+
+print(onlineads.info())
+
+print(onlineads.describe())
+
+## null **values**
+
+## Binary **Conversion**
+
+varlist =  ['Gender']
+def binary_map(x):
+    return x.map({'Male': 1, "Female": 0})
+
+onlineads[varlist] = onlineads[varlist].apply(binary_map)
+
+# Check the housing dataframe now
+onlineads
+
+# **outlair**
+
+def detect_outliers_zscore(data):
+    outliers = []
+    thres = 1
+    mean = np.mean(data)
+    std = np.std(data)
+  
+    for i in data:
+    
+        z_score = (i-mean)/std
+        if (np.abs(z_score) > thres):
+            outliers.append(i)
+    return outliers
+
+sample_outliers_Age = detect_outliers_zscore(onlineads['Age']) 
+print("Outliers in Age column from Z-scores method: ", sample_outliers_Age)
+
+from scipy.stats import zscore
+z1=np.abs(zscore(onlineads['Age']))
+onlineads['Zscore_Age']=z1
+outliers_Age=len(onlineads[onlineads['Zscore_Age']>3])
+data_z = onlineads[onlineads['Zscore_Age']<3]
+onlineads=data_z.drop(['Zscore_Age'], axis=1)
+onlineads
+
+## **Missing**
+
+print(onlineads.isnull().sum())
+
+## **Split the data**
+
+from sklearn.model_selection import train_test_split
+dataframe = onlineads.values
+X, y = dataframe[:, :-1], dataframe[:, -1]
+x_train, x_test, y_train, y_test = train_test_split(X, y, test_size = 0.20, random_state = 10)
+x_train
+
+## **Thank you**
